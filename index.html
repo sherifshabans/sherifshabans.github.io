@@ -635,6 +635,49 @@ html[dir="rtl"] .tl li{--dir:-1}
   .chip:hover,.tags span:hover,#grid .card:hover,.tl li:hover,.filters button:hover{transform:none}
 }
 
+/* ---------- showcase strip ----------
+   Two rows of real screens drifting past in opposite directions. It shows the
+   breadth of the work in the space a single hero image would have taken. */
+.showcase{
+  margin-block-start:clamp(30px,5vw,48px);
+  display:grid;gap:12px;
+  /* break out of the reading column — the strip reads as a band, not a figure */
+  /* body clips the overflow, so the scrollbar gutter costs nothing */
+  margin-inline:calc(50% - 50vw);
+  inline-size:100vw;max-inline-size:100vw;
+}
+.marquee{
+  overflow:hidden;
+  /* fade both ends so the loop never shows a hard edge */
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+}
+.marquee .track{
+  display:flex;gap:12px;inline-size:max-content;
+  /* the animation is written left-to-right; RTL must not flip it */
+  direction:ltr;
+  animation:drift 72s linear infinite;
+  will-change:transform;
+}
+.marquee.rev .track{animation-direction:reverse}
+.marquee .track img{
+  block-size:clamp(150px,19vw,214px);inline-size:auto;
+  border-radius:10px;border:1px solid var(--line);
+  background:var(--surface-2);
+  box-shadow:0 8px 22px rgba(0,0,0,.30);
+  transition:transform .35s var(--ease),border-color .35s;
+}
+.marquee .track img:hover{transform:translateY(-5px);border-color:var(--gold-soft)}
+/* the set is laid down twice, so half a loop lands exactly on the seam */
+@keyframes drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.showcase:hover .track{animation-play-state:paused}
+
+@media (prefers-reduced-motion: reduce){
+  .marquee .track{animation:none}
+  .marquee{overflow-x:auto;scrollbar-width:thin}
+}
+@media print{ .showcase{display:none} }
+
 /* ---------- rail arrows ----------
    A horizontal strip with no control reads as a dead end on a mouse, where
    sideways scrolling needs a modifier nobody thinks to press. */
@@ -736,9 +779,7 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
 
 /* ---------- the hero carries three real screens, not a stock illustration ---------- */
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
-@media (min-width:980px){
-  .hero-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(24px,4vw,56px);align-items:center}
-}
+
 .devices{
   display:none;position:relative;justify-self:center;
   inline-size:100%;max-inline-size:330px;
@@ -959,8 +1000,6 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
 
     <!-- ===================== HERO ===================== -->
     <section class="sec hero">
-      <div class="hero-grid">
-        <div>
       <span class="eyebrow anim d1" data-ar="مهندس تطبيقات موبايل · القاهرة، مصر"
             data-en="Mobile Engineer · Cairo, Egypt">مهندس تطبيقات موبايل · القاهرة، مصر</span>
       <h1 class="anim d2" data-ar="الشريف شعبان" data-en="Elsharif Shaban">الشريف شعبان</h1>
@@ -982,15 +1021,11 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
         </span>
       </div>
 
-        </div>
-        <div class="devices" aria-hidden="true">
-          <figure class="d-a"><img src="img/sv-home-c.webp" alt="" loading="lazy" width="560" height="1244"></figure>
-          <figure class="d-b"><img src="img/ia_login.webp" alt="" loading="lazy" width="560" height="1244"></figure>
-          <figure class="d-c"><img src="img/nk_menu.webp" alt="" loading="lazy" width="560" height="1244"></figure>
-          <figure class="d-d"><img src="img/lr-act-l.webp" alt="" loading="lazy" width="560" height="1244"></figure>
-        </div>
-      </div>
 
+      <div class="showcase" aria-hidden="true">
+        <div class="marquee"><div class="track"><img src="img/sv-home-c.webp" alt="" decoding="async" width="560" height="1244"><img src="img/nk_menu.webp" alt="" decoding="async" width="560" height="1244"><img src="img/ia_login.webp" alt="" decoding="async" width="560" height="1244"><img src="img/lr-act-l.webp" alt="" decoding="async" width="560" height="1244"><img src="img/movies-app.webp" alt="" decoding="async" width="560" height="1244"><img src="img/quikmart.webp" alt="" decoding="async" width="560" height="1244"><img src="img/sv-azkar-c.webp" alt="" decoding="async" width="560" height="1244"><img src="img/ia_finding.webp" alt="" decoding="async" width="560" height="1244"><img src="img/lr-dash-l.webp" alt="" decoding="async" width="560" height="1244"><img src="img/period_track.webp" alt="" decoding="async" width="560" height="1244"><img src="img/nk_menu2.webp" alt="" decoding="async" width="560" height="1244"><img src="img/bank1.webp" alt="" decoding="async" width="560" height="1244"><img src="img/sv-home-c.webp" alt="" decoding="async" width="560" height="1244"><img src="img/nk_menu.webp" alt="" decoding="async" width="560" height="1244"><img src="img/ia_login.webp" alt="" decoding="async" width="560" height="1244"><img src="img/lr-act-l.webp" alt="" decoding="async" width="560" height="1244"><img src="img/movies-app.webp" alt="" decoding="async" width="560" height="1244"><img src="img/quikmart.webp" alt="" decoding="async" width="560" height="1244"><img src="img/sv-azkar-c.webp" alt="" decoding="async" width="560" height="1244"><img src="img/ia_finding.webp" alt="" decoding="async" width="560" height="1244"><img src="img/lr-dash-l.webp" alt="" decoding="async" width="560" height="1244"><img src="img/period_track.webp" alt="" decoding="async" width="560" height="1244"><img src="img/nk_menu2.webp" alt="" decoding="async" width="560" height="1244"><img src="img/bank1.webp" alt="" decoding="async" width="560" height="1244"></div></div>
+        <div class="marquee rev"><div class="track"><img src="img/ia_approved.webp" alt="" decoding="async" width="560" height="1244"><img src="img/lr-quran-l.webp" alt="" decoding="async" width="560" height="1244"><img src="img/delivery-tracker.webp" alt="" decoding="async" width="560" height="1244"><img src="img/sv-tree-n.webp" alt="" decoding="async" width="560" height="1244"><img src="img/mc1.webp" alt="" decoding="async" width="560" height="1244"><img src="img/nk-login.webp" alt="" decoding="async" width="560" height="1244"><img src="img/ia_settings2.webp" alt="" decoding="async" width="560" height="1244"><img src="img/happydatials.webp" alt="" decoding="async" width="560" height="1244"><img src="img/sv-quran-n.webp" alt="" decoding="async" width="560" height="1244"><img src="img/shop1.webp" alt="" decoding="async" width="560" height="1244"><img src="img/lr-sched-l.webp" alt="" decoding="async" width="560" height="1244"><img src="img/ia_sign2.webp" alt="" decoding="async" width="560" height="1244"><img src="img/ia_approved.webp" alt="" decoding="async" width="560" height="1244"><img src="img/lr-quran-l.webp" alt="" decoding="async" width="560" height="1244"><img src="img/delivery-tracker.webp" alt="" decoding="async" width="560" height="1244"><img src="img/sv-tree-n.webp" alt="" decoding="async" width="560" height="1244"><img src="img/mc1.webp" alt="" decoding="async" width="560" height="1244"><img src="img/nk-login.webp" alt="" decoding="async" width="560" height="1244"><img src="img/ia_settings2.webp" alt="" decoding="async" width="560" height="1244"><img src="img/happydatials.webp" alt="" decoding="async" width="560" height="1244"><img src="img/sv-quran-n.webp" alt="" decoding="async" width="560" height="1244"><img src="img/shop1.webp" alt="" decoding="async" width="560" height="1244"><img src="img/lr-sched-l.webp" alt="" decoding="async" width="560" height="1244"><img src="img/ia_sign2.webp" alt="" decoding="async" width="560" height="1244"></div></div>
+      </div>
 
       <div class="proof anim d5">
         <div>
