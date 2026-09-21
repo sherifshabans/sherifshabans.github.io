@@ -741,11 +741,11 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
 }
 .devices{
   display:none;position:relative;justify-self:center;
-  inline-size:100%;max-inline-size:390px;aspect-ratio:1/1.08;
+  inline-size:100%;max-inline-size:430px;aspect-ratio:1/1.42;
 }
 @media (min-width:980px){.devices{display:block}}
 .devices figure{
-  position:absolute;margin:0;inline-size:52%;
+  position:absolute;margin:0;inline-size:39%;
   border-radius:20px;overflow:hidden;
   border:1px solid var(--line-strong);
   background:var(--surface);
@@ -753,16 +753,19 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
   will-change:transform;
 }
 .devices img{display:block;inline-size:100%;block-size:auto}
-.devices .d-a{inset-block-start:0;inset-inline-start:2%;transform:rotate(-6deg);z-index:2}
-.devices .d-b{inset-block-start:13%;inset-inline-end:0;transform:rotate(5deg);z-index:3}
-.devices .d-c{inset-block-end:0;inset-inline-start:20%;transform:rotate(-2deg);z-index:1}
+.devices .d-a{inset-block-start:0;inset-inline-start:1%;transform:rotate(-6deg);z-index:2}
+.devices .d-b{inset-block-start:5%;inset-inline-end:0;transform:rotate(5deg);z-index:1}
+.devices .d-c{inset-block-end:0;inset-inline-start:0;transform:rotate(-3deg);z-index:4}
+.devices .d-d{inset-block-end:4%;inset-inline-end:2%;transform:rotate(6deg);z-index:3}
 /* a slow, barely-there drift so the cluster is alive but never distracting */
 .devices .d-a{animation:floatA 9s ease-in-out infinite alternate}
 .devices .d-b{animation:floatB 11s ease-in-out infinite alternate}
 .devices .d-c{animation:floatC 10s ease-in-out infinite alternate}
+.devices .d-d{animation:floatD 12s ease-in-out infinite alternate}
 @keyframes floatA{from{transform:rotate(-6deg) translateY(0)}to{transform:rotate(-5deg) translateY(-12px)}}
 @keyframes floatB{from{transform:rotate(5deg) translateY(0)}to{transform:rotate(4deg) translateY(10px)}}
-@keyframes floatC{from{transform:rotate(-2deg) translateY(0)}to{transform:rotate(-3deg) translateY(-8px)}}
+@keyframes floatC{from{transform:rotate(-3deg) translateY(0)}to{transform:rotate(-4deg) translateY(-8px)}}
+@keyframes floatD{from{transform:rotate(6deg) translateY(0)}to{transform:rotate(5deg) translateY(9px)}}
 .devices figcaption{
   position:absolute;inset-block-end:6px;inset-inline:6px;
   font-size:.62rem;color:var(--muted);text-align:center;
@@ -770,7 +773,7 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
   padding:3px 6px;border-radius:5px;
 }
 @media (prefers-reduced-motion: reduce){
-  .devices .d-a,.devices .d-b,.devices .d-c{animation:none}
+  .devices .d-a,.devices .d-b,.devices .d-c,.devices .d-d{animation:none}
 }
 
 /* ---------- hero aurora: two slow gold washes drifting behind the name ---------- */
@@ -990,6 +993,7 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
           <figure class="d-a"><img src="img/sv-home-c.webp" alt="" loading="lazy" width="560" height="1244"></figure>
           <figure class="d-b"><img src="img/ia_login.webp" alt="" loading="lazy" width="560" height="1244"></figure>
           <figure class="d-c"><img src="img/nk_menu.webp" alt="" loading="lazy" width="560" height="1244"></figure>
+          <figure class="d-d"><img src="img/lr-quran-l.webp" alt="" loading="lazy" width="560" height="1244"></figure>
         </div>
       </div>
 
@@ -2633,7 +2637,7 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
     var cluster = document.querySelector(".devices");
     if(cluster){
       var layers = cluster.querySelectorAll("figure");
-      var depths = [0.10, -0.06, 0.16];
+      var depths = [0.10, -0.06, 0.16, -0.11];
       var parTick = false;
       function parallax(){
         parTick = false;
