@@ -678,6 +678,39 @@ html[dir="rtl"] .tl li{--dir:-1}
 }
 @media print{ .showcase{display:none} }
 
+/* ---------- site footer counters ----------
+   Two numbers at the very bottom: how many visits the page has had, and how
+   many people are on it right now. Both stay hidden until a backend answers,
+   so a dead counter never shows a broken dash. */
+.sitefoot{
+  display:flex;justify-content:center;align-items:center;gap:18px;
+  flex-wrap:wrap;
+  padding-block:26px 34px;margin-block-start:8px;
+  border-block-start:1px solid var(--line);
+  font-size:.78rem;color:var(--muted);
+  opacity:0;transition:opacity .5s var(--ease);
+}
+.sitefoot.ready{opacity:1}
+.foot-stat{display:inline-flex;align-items:center;gap:8px}
+.foot-stat b{
+  font-family:var(--f-mono);font-weight:500;
+  color:var(--gold);font-variant-numeric:tabular-nums;
+}
+.foot-sep{inline-size:1px;block-size:14px;background:var(--line-strong)}
+.live-dot{
+  inline-size:7px;block-size:7px;border-radius:50%;
+  background:#4ade80;flex:none;
+  box-shadow:0 0 0 0 rgba(74,222,128,.55);
+  animation:livePulse 2.2s ease-out infinite;
+}
+@keyframes livePulse{
+  0%{box-shadow:0 0 0 0 rgba(74,222,128,.55)}
+  70%{box-shadow:0 0 0 7px rgba(74,222,128,0)}
+  100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}
+}
+@media (prefers-reduced-motion: reduce){ .live-dot{animation:none} }
+@media print{ .sitefoot{display:none} }
+
 /* ---------- rail arrows ----------
    A horizontal strip with no control reads as a dead end on a mouse, where
    sideways scrolling needs a modifier nobody thinks to press. */
@@ -2301,6 +2334,19 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
     </section>
 
   </main>
+
+  <footer class="sitefoot" id="sitefoot">
+    <span class="foot-stat">
+      <span data-ar="زيارات الموقع" data-en="Site visits">زيارات الموقع</span>
+      <b id="hit-total">—</b>
+    </span>
+    <span class="foot-sep" aria-hidden="true"></span>
+    <span class="foot-stat">
+      <i class="live-dot" aria-hidden="true"></i>
+      <span data-ar="متصل دلوقتي" data-en="Online now">متصل دلوقتي</span>
+      <b id="hit-now">—</b>
+    </span>
+  </footer>
 </div>
 
 <script>
@@ -2887,5 +2933,62 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
   });
 })();
 </script>
+
+<!-- ---------- visit + presence counters ----------
+     Firebase Realtime Database does both numbers with one free project:
+     a counter for total visits, and onDisconnect presence for who is here now.
+     The config below is a public web config by design — it is not a secret;
+     the database rules are what keep it safe. Until it is filled in, the
+     footer simply never reveals itself. -->
+<script type="module">
+  const CFG = {
+    apiKey: "",
+    databaseURL: "",
+    projectId: ""
+  };
+
+  if (CFG.databaseURL) {
+    const [{ initializeApp }, db] = await Promise.all([
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js")
+    ]);
+    const {
+      getDatabase, ref, onValue, runTransaction,
+      onDisconnect, set, serverTimestamp
+    } = db;
+
+    const app = initializeApp(CFG);
+    const d = getDatabase(app);
+    const foot = document.getElementById("sitefoot");
+    const elTotal = document.getElementById("hit-total");
+    const elNow = document.getElementById("hit-now");
+    const fmt = n => Number(n || 0).toLocaleString(
+      document.documentElement.lang === "en" ? "en-US" : "ar-EG"
+    );
+
+    /* count a visit once per tab, not once per scroll-back */
+    let counted = false;
+    try { counted = sessionStorage.getItem("es-counted") === "1"; } catch (e) {}
+    if (!counted) {
+      runTransaction(ref(d, "stats/visits"), v => (v || 0) + 1);
+      try { sessionStorage.setItem("es-counted", "1"); } catch (e) {}
+    }
+
+    onValue(ref(d, "stats/visits"), snap => {
+      elTotal.textContent = fmt(snap.val());
+      foot.classList.add("ready");
+    });
+
+    /* presence: a row that deletes itself the moment the tab goes away */
+    const me = ref(d, "presence/" + Math.random().toString(36).slice(2, 11));
+    onDisconnect(me).remove();
+    set(me, serverTimestamp());
+    onValue(ref(d, "presence"), snap => {
+      elNow.textContent = fmt(snap.size || 0);
+      foot.classList.add("ready");
+    });
+  }
+</script>
+
 </body>
 </html>
