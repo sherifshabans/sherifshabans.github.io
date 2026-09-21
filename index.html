@@ -324,13 +324,24 @@ html[dir="rtl"] .spec-k{font-family:var(--f-body);font-size:.8rem}
 /* ---------- screenshot gallery ---------- */
 .gallery{
   margin-block-start:26px;padding-block-end:6px;
-  display:grid;grid-auto-flow:column;grid-auto-columns:minmax(178px,1fr);
-  gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;
-  scrollbar-width:thin;
+  display:grid;grid-auto-flow:column;grid-auto-columns:max-content;
+  gap:14px;overflow-x:auto;
+  /* proximity, not mandatory: mandatory fights you on a trackpad */
+  scroll-snap-type:x proximity;
+  overscroll-behavior-x:contain;
+  scrollbar-width:thin;scroll-padding-inline:2px;
 }
-.gallery figure{margin:0;scroll-snap-align:start;min-width:0}
+.gallery figure{
+  margin:0;scroll-snap-align:start;min-width:0;
+  /* a phone screenshot is ~9:19.5 — size the frame to that so nothing stretches */
+  inline-size:clamp(146px,14vw,172px);
+}
 .gallery img{
-  inline-size:100%;border-radius:12px;background:#0b0f0e;
+  inline-size:100%;
+  /* cap the height so one long settings screen cannot dominate the rail */
+  block-size:clamp(300px,40vh,428px);
+  object-fit:contain;object-position:center;
+  border-radius:12px;background:transparent;
   border:1px solid var(--line);box-shadow:var(--shadow);
 }
 .gallery figcaption{
@@ -344,7 +355,7 @@ html[dir="rtl"] .spec-k{font-family:var(--f-body);font-size:.8rem}
 /* ---------- a gallery the reader can flip between two states ----------
    The apps themselves carry the switch (cartoon mode, night mode), so the
    page carries it too: the same screen, swapped in place. */
-.shotset{margin-block-start:22px}
+.shotset{margin-block-start:22px;min-inline-size:0}
 .switcher{
   display:inline-flex;border:1px solid var(--line-strong);
   border-radius:999px;overflow:hidden;margin-block-end:4px;
@@ -613,6 +624,29 @@ html[dir="rtl"] .tl li{--dir:-1}
   .chip:hover,.tags span:hover,#grid .card:hover,.tl li:hover,.filters button:hover{transform:none}
 }
 
+/* ---------- rail arrows ----------
+   A horizontal strip with no control reads as a dead end on a mouse, where
+   sideways scrolling needs a modifier nobody thinks to press. */
+.rail-wrap{position:relative;min-inline-size:0;max-inline-size:100%}
+.rail-btn{
+  position:absolute;inset-block-start:calc(50% - 40px);z-index:3;
+  inline-size:38px;block-size:38px;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;
+  border:1px solid var(--line-strong);
+  background:color-mix(in srgb,var(--ground) 86%,transparent);
+  backdrop-filter:blur(6px);
+  color:var(--text);font-size:15px;line-height:1;
+  opacity:0;transition:opacity var(--t-mid),background var(--t-fast),transform var(--t-fast) var(--ease);
+}
+.rail-wrap:hover .rail-btn,.rail-btn:focus-visible{opacity:1}
+.rail-btn:hover{background:var(--gold);color:var(--ground);transform:scale(1.06)}
+.rail-btn[disabled]{opacity:0!important;pointer-events:none}
+.rail-prev{inset-inline-start:-6px}
+.rail-next{inset-inline-end:-6px}
+@media (max-width:760px){ .rail-btn{display:none} }  /* touch already swipes */
+@media (prefers-reduced-motion: reduce){ .rail-btn{transition:none} }
+@media print{ .rail-btn{display:none} }
+
 /* ---------- case studies fold ----------
    The four studies run to eleven screens of prose. Each h4 becomes a
    disclosure so the page can be skimmed in four, and read in full on demand.
@@ -632,8 +666,8 @@ h4.fold-h::after{
 h4.fold-h[aria-expanded="true"]::after{transform:rotate(-135deg);margin-block-start:2px}
 h4.fold-h:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
 
-.fold{display:grid;grid-template-rows:0fr;transition:grid-template-rows .42s cubic-bezier(.2,.7,.25,1)}
-.fold>.fold-in{overflow:hidden;min-block-size:0}
+.fold{display:grid;grid-template-rows:0fr;min-inline-size:0;transition:grid-template-rows .42s cubic-bezier(.2,.7,.25,1)}
+.fold>.fold-in{overflow:hidden;min-block-size:0;min-inline-size:0}
 .fold.open{grid-template-rows:1fr}
 /* an open fold must not clip a sticky or overflowing child once settled */
 .fold.open>.fold-in{overflow:visible}
@@ -2255,6 +2289,11 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
       if(v.indexOf("<") !== -1) nodes[i].innerHTML = v;
       else nodes[i].textContent = v;
     }
+    var arrows = document.querySelectorAll(".rail-btn");
+    for(var ab = 0; ab < arrows.length; ab++){
+      var lbl = arrows[ab].getAttribute("data-" + lang + "-label");
+      if(lbl) arrows[ab].setAttribute("aria-label", lbl);
+    }
     btnAr.setAttribute("aria-pressed", String(lang === "ar"));
     btnEn.setAttribute("aria-pressed", String(lang === "en"));
     try{ localStorage.setItem("es-lang", lang); }catch(e){}
@@ -2432,6 +2471,71 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
         }
       });
     }, { passive: true });
+  }
+
+
+  /* ---------- give every screenshot rail a pair of arrows ----------
+     Built here rather than in the markup so the page degrades to a plain
+     scrollable strip with JS off, and so print never shows them. */
+  var railList = document.querySelectorAll(".gallery");
+  for (var rb = 0; rb < railList.length; rb++) {
+    (function (rail) {
+      var wrap = document.createElement("div");
+      wrap.className = "rail-wrap";
+      rail.parentNode.insertBefore(wrap, rail);
+      wrap.appendChild(rail);
+      /* the progress hairline was inserted after the rail — keep it with it */
+      var sib = wrap.nextElementSibling;
+      if (sib && sib.classList.contains("rail-prog")) wrap.appendChild(sib);
+
+      function makeBtn(dir, glyph, labelAr, labelEn) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "rail-btn rail-" + dir;
+        b.textContent = glyph;
+        b.setAttribute("aria-label", root.lang === "en" ? labelEn : labelAr);
+        b.setAttribute("data-ar-label", labelAr);
+        b.setAttribute("data-en-label", labelEn);
+        wrap.appendChild(b);
+        return b;
+      }
+      /* in RTL the visual "previous" is still the start of the scroll range,
+         so step by a signed amount rather than by a hard left/right */
+      var prev = makeBtn("prev", "‹", "السابق", "Previous");
+      var next = makeBtn("next", "›", "التالي", "Next");
+
+      function step(sign) {
+        var card = rail.querySelector("figure");
+        var by = (card ? card.getBoundingClientRect().width + 14 : 200) * 2;
+        var rtl = getComputedStyle(rail).direction === "rtl";
+        rail.scrollBy({
+          left: sign * by * (rtl ? -1 : 1),
+          behavior: (reduce || document.hidden) ? "auto" : "smooth"
+        });
+        /* do not wait on a scroll event to refresh the buttons: it never
+           arrives in a background tab, and the pair would stay stale */
+        setTimeout(sync, 60);
+        setTimeout(sync, 520);
+      }
+      prev.addEventListener("click", function () { step(-1); });
+      next.addEventListener("click", function () { step(1); });
+
+      function sync() {
+        var max = rail.scrollWidth - rail.clientWidth;
+        if (max <= 4) { prev.disabled = true; next.disabled = true; return; }
+        var pos = Math.abs(rail.scrollLeft);
+        prev.disabled = pos <= 2;
+        next.disabled = pos >= max - 2;
+      }
+      rail.addEventListener("scroll", sync, { passive: true });
+      window.addEventListener("resize", sync, { passive: true });
+      sync();
+      /* images settle late; re-measure once they have */
+      var imgs = rail.querySelectorAll("img");
+      for (var im = 0; im < imgs.length; im++) {
+        if (!imgs[im].complete) imgs[im].addEventListener("load", sync, { once: true });
+      }
+    })(railList[rb]);
   }
 
 
