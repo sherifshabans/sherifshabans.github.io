@@ -2935,58 +2935,71 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
 </script>
 
 <!-- ---------- visit + presence counters ----------
-     Firebase Realtime Database does both numbers with one free project:
-     a counter for total visits, and onDisconnect presence for who is here now.
-     The config below is a public web config by design — it is not a secret;
-     the database rules are what keep it safe. Until it is filled in, the
-     footer simply never reveals itself. -->
+     Supabase does both numbers: an RPC bumps a single-row total, and the
+     realtime channel's presence feature reports who is connected right now.
+     The anon key below is public by design — every Supabase web app ships
+     one; row-level security is what actually guards the data. The footer
+     stays hidden until a real number arrives, so a dead backend shows
+     nothing rather than an empty dash. -->
 <script type="module">
-  const CFG = {
-    apiKey: "",
-    databaseURL: "",
-    projectId: ""
-  };
+  const SUPA_URL = "";
+  const SUPA_KEY = "";
 
-  if (CFG.databaseURL) {
-    const [{ initializeApp }, db] = await Promise.all([
-      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
-      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js")
-    ]);
-    const {
-      getDatabase, ref, onValue, runTransaction,
-      onDisconnect, set, serverTimestamp
-    } = db;
-
-    const app = initializeApp(CFG);
-    const d = getDatabase(app);
+  if (SUPA_URL && SUPA_KEY) {
     const foot = document.getElementById("sitefoot");
     const elTotal = document.getElementById("hit-total");
     const elNow = document.getElementById("hit-now");
     const fmt = n => Number(n || 0).toLocaleString(
       document.documentElement.lang === "en" ? "en-US" : "ar-EG"
     );
+    const reveal = () => foot && foot.classList.add("ready");
 
-    /* count a visit once per tab, not once per scroll-back */
-    let counted = false;
-    try { counted = sessionStorage.getItem("es-counted") === "1"; } catch (e) {}
-    if (!counted) {
-      runTransaction(ref(d, "stats/visits"), v => (v || 0) + 1);
-      try { sessionStorage.setItem("es-counted", "1"); } catch (e) {}
+    try {
+      const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+      const sb = createClient(SUPA_URL, SUPA_KEY, {
+        auth: { persistSession: false }
+      });
+
+      /* ---- total visits: count a tab once, not every scroll-back ---- */
+      let counted = false;
+      try { counted = sessionStorage.getItem("es-counted") === "1"; } catch (e) {}
+
+      if (!counted) {
+        const { data } = await sb.rpc("bump_visits");
+        if (data != null) { elTotal.textContent = fmt(data); reveal(); }
+        try { sessionStorage.setItem("es-counted", "1"); } catch (e) {}
+      } else {
+        const { data } = await sb.from("site_stats").select("visits").single();
+        if (data) { elTotal.textContent = fmt(data.visits); reveal(); }
+      }
+
+      /* keep the total live while the tab stays open */
+      sb.channel("stats")
+        .on("postgres_changes",
+            { event: "UPDATE", schema: "public", table: "site_stats" },
+            payload => {
+              if (payload.new && payload.new.visits != null) {
+                elTotal.textContent = fmt(payload.new.visits);
+              }
+            })
+        .subscribe();
+
+      /* ---- who is here now: presence drops the moment a tab closes ---- */
+      const me = Math.random().toString(36).slice(2, 11);
+      const room = sb.channel("online", { config: { presence: { key: me } } });
+      room
+        .on("presence", { event: "sync" }, () => {
+          elNow.textContent = fmt(Object.keys(room.presenceState()).length);
+          reveal();
+        })
+        .subscribe(async status => {
+          if (status === "SUBSCRIBED") await room.track({ t: Date.now() });
+        });
+
+      addEventListener("pagehide", () => { try { room.untrack(); } catch (e) {} });
+    } catch (e) {
+      /* a counter is never worth breaking the page over */
     }
-
-    onValue(ref(d, "stats/visits"), snap => {
-      elTotal.textContent = fmt(snap.val());
-      foot.classList.add("ready");
-    });
-
-    /* presence: a row that deletes itself the moment the tab goes away */
-    const me = ref(d, "presence/" + Math.random().toString(36).slice(2, 11));
-    onDisconnect(me).remove();
-    set(me, serverTimestamp());
-    onValue(ref(d, "presence"), snap => {
-      elNow.textContent = fmt(snap.size || 0);
-      foot.classList.add("ready");
-    });
   }
 </script>
 
