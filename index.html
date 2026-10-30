@@ -382,6 +382,18 @@ html[dir="rtl"] .spec-k{font-family:var(--f-body);font-size:.8rem}
 .shotset[data-show="b"] .gallery figure[data-set="a"]{display:none}
 .shotset .gallery{margin-block-start:14px}
 
+/* ---------- business slides: square designs, bigger than a phone shot,
+   and they open full size since their text is set for a whole screen ---------- */
+.gallery.biz figure{inline-size:clamp(250px,34vw,400px)}
+@media (max-width:560px){.gallery.biz figure{inline-size:78vw}}
+.gallery.biz img{block-size:auto;aspect-ratio:1/1;object-fit:cover;border-radius:14px;cursor:zoom-in}
+.lightbox{
+  position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:16px;
+  background:rgba(5,8,7,.9);cursor:zoom-out;
+}
+.lightbox[hidden]{display:none}
+.lightbox img{max-inline-size:min(94vw,1080px);max-block-size:92vh;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+
 /* ---------- side-by-side visual + text ---------- */
 .visual-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,260px);gap:24px;align-items:center;margin-block-start:24px}
 @media (max-width:700px){.visual-row{grid-template-columns:minmax(0,1fr)}}
@@ -1321,6 +1333,31 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
               <img src="img/nakla-van.webp" alt="" loading="lazy">
             </div>
 
+            <h4 data-ar="إزاي بيشتغل" data-en="How it works">إزاي بيشتغل</h4>
+            <div class="gallery biz">
+              <figure>
+                <img src="img/biz/nakla-how.webp" alt="إزاي بيشتغل" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="إزاي بيشتغل — من تجهيز التاجر لحد متابعته أول بأول" data-en="How it works — from the merchant’s setup to following every sale">إزاي بيشتغل — من تجهيز التاجر لحد متابعته أول بأول</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/nakla-receipt.webp" alt="فاتورة مطبوعة في إيد العميل" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="فاتورة مطبوعة في إيد العميل — على طابعة 58 أو 80 مم" data-en="A printed invoice in the customer’s hand — on a 58 or 80 mm printer">فاتورة مطبوعة في إيد العميل — على طابعة 58 أو 80 مم</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/nakla-offline.webp" alt="النت فصل؟ العمليات بتستنى على الموبايل وتتبعت لوحدها" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="النت فصل؟ العمليات بتستنى على الموبايل وتتبعت لوحدها" data-en="Signal gone? Transactions wait on the phone and send themselves">النت فصل؟ العمليات بتستنى على الموبايل وتتبعت لوحدها</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/nakla-dashboard.webp" alt="لوحة التاجر" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="لوحة التاجر — الإدارة والتعاملات والجرد" data-en="The merchant dashboard — staff, transactions, stock">لوحة التاجر — الإدارة والتعاملات والجرد</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/nakla-roles.webp" alt="كل واحد على شاشته" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="كل واحد على شاشته — المندوب على البيع، والتاجر على اللوحة" data-en="Everyone on their own screens — reps sell, merchants manage">كل واحد على شاشته — المندوب على البيع، والتاجر على اللوحة</figcaption>
+              </figure>
+            </div>
+            <p class="gallery-note" data-ar="↔ اسحب للجنب، ودوس على أي صورة تكبّرها" data-en="↔ Swipe across, and tap any image to see it full size">↔ اسحب للجنب، ودوس على أي صورة تكبّرها</p>
+
             <div class="gallery">
               <figure>
                 <img src="img/nk-login.webp" alt="" loading="lazy">
@@ -1468,6 +1505,27 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
             <h4 data-ar="المشكلة" data-en="The problem">المشكلة</h4>
             <p data-ar="المراجع بيقف في جهة حكومية من غير شبكة، معاه ورق وكاميرا موبايل، ولازم يطلع بمحضر رسمي مرقّم وموقّع يتصدّر بصيغة تتفتح في Word على أي جهاز. والمحضر ده مستند قانوني — رقمه ما يتكررش، وتوقيعه ما يضيعش، والعربي اللي فيه يطلع مقروء مش حروف مفكّكة."
                data-en="The auditor stands inside a government body with no network, holding paper and a phone camera, and has to come out with a numbered, signed, official record exported in a format that opens in Word anywhere. That record is a legal document: its number must never repeat, its signature must never be lost, and the Arabic in it must come out readable rather than broken apart.">المراجع بيقف في جهة حكومية من غير شبكة، معاه ورق وكاميرا موبايل، ولازم يطلع بمحضر رسمي مرقّم وموقّع يتصدّر بصيغة تتفتح في Word على أي جهاز. والمحضر ده مستند قانوني — رقمه ما يتكررش، وتوقيعه ما يضيعش، والعربي اللي فيه يطلع مقروء مش حروف مفكّكة.</p>
+
+            <h4 data-ar="إزاي بيشتغل" data-en="How it works">إزاي بيشتغل</h4>
+            <div class="gallery biz">
+              <figure>
+                <img src="img/biz/audit-how.webp" alt="إزاي بيشتغل" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="إزاي بيشتغل — من بداية الزيارة لحد المحضر الموقّع" data-en="How it works — from the start of the visit to the signed report">إزاي بيشتغل — من بداية الزيارة لحد المحضر الموقّع</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/audit-offline.webp" alt="من غير إنترنت ولا زرار حفظ" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="من غير إنترنت ولا زرار حفظ — الزيارة بترجع من نفس النقطة" data-en="No internet, no save button — a visit resumes where it stopped">من غير إنترنت ولا زرار حفظ — الزيارة بترجع من نفس النقطة</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/audit-minutes.webp" alt="محضر رسمي في 3 صيغ" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="محضر رسمي في 3 صيغ — PDF وWord وExcel" data-en="An official report in three formats — PDF, Word, Excel">محضر رسمي في 3 صيغ — PDF وWord وExcel</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/audit-langs.webp" alt="5 لغات وثيمين" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="5 لغات وثيمين — والجهة تحط شعارها واسمها" data-en="Five languages, two themes — the body sets its own logo and name">5 لغات وثيمين — والجهة تحط شعارها واسمها</figcaption>
+              </figure>
+            </div>
+            <p class="gallery-note" data-ar="↔ اسحب للجنب، ودوس على أي صورة تكبّرها" data-en="↔ Swipe across, and tap any image to see it full size">↔ اسحب للجنب، ودوس على أي صورة تكبّرها</p>
 
             <h4 data-ar="الرحلة — تمان خطوات" data-en="The flow — eight steps">الرحلة — تمان خطوات</h4>
             <div class="matrix">
@@ -1658,6 +1716,35 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
             <h4 data-ar="المشكلة" data-en="The problem">المشكلة</h4>
             <p data-ar="الأكاديمية كانت شغّالة على واتساب وشيتات: الحصص بتتحدّد بالرسايل، والتقييم بيتكتب في مكان، وحساب راتب المعلّم في مكان تاني، والطالب مش شايف تقدّمه أصلاً. المطلوب مكانش «تطبيق للطالب» — كان نقل الأكاديمية كلها لمكان واحد. وفيه طبقة زيادة: <b>طلاب الأكاديمية أعاجم</b>، العربية مش لغتهم. يعني التطبيق لازم يمسك إيد حد بيتعلّم نص هو لسه ما بيقراهوش بطلاقة — ده اللي خلّى القراءة كلمة-بكلمة وتلاوة كل آية بصوت قارئ وملاحظات المعلّم على التلاوة مش رفاهية، دي أدوات الشغل نفسها."
                data-en="The academy ran on WhatsApp and spreadsheets: sessions arranged in messages, evaluations written in one place, teacher salaries computed in another, and the student unable to see their own progress at all. The ask was never “an app for students” — it was moving the whole academy into one place.">الأكاديمية كانت شغّالة على واتساب وشيتات: الحصص بتتحدّد بالرسايل، والتقييم بيتكتب في مكان، وحساب راتب المعلّم في مكان تاني، والطالب مش شايف تقدّمه أصلاً. المطلوب مكانش «تطبيق للطالب» — كان نقل الأكاديمية كلها لمكان واحد. وفيه طبقة زيادة: <b>طلاب الأكاديمية أعاجم</b>، العربية مش لغتهم. يعني التطبيق لازم يمسك إيد حد بيتعلّم نص هو لسه ما بيقراهوش بطلاقة — ده اللي خلّى القراءة كلمة-بكلمة وتلاوة كل آية بصوت قارئ وملاحظات المعلّم على التلاوة مش رفاهية، دي أدوات الشغل نفسها.</p>
+
+            <h4 data-ar="إزاي بيشتغل" data-en="How it works">إزاي بيشتغل</h4>
+            <div class="gallery biz">
+              <figure>
+                <img src="img/biz/laraib-how.webp" alt="إزاي بيشتغل" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="إزاي بيشتغل — الإدارة والطالب والمعلّم، خطوة بخطوة" data-en="How it works — admin, student and teacher, step by step">إزاي بيشتغل — الإدارة والطالب والمعلّم، خطوة بخطوة</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/laraib-mushaf.webp" alt="المصحف زي المطبوع" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="المصحف زي المطبوع — 604 صفحة، كل صفحة 15 سطر" data-en="The printed Mushaf, as real text — 604 pages of 15 lines">المصحف زي المطبوع — 604 صفحة، كل صفحة 15 سطر</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/laraib-tajweed.webp" alt="التجويد بمرجعه" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="التجويد بمرجعه — 26 حكم، والمس الحرف تعرف حكمه" data-en="Tajweed with its sources — 26 rules; tap a letter to see its rule">التجويد بمرجعه — 26 حكم، والمس الحرف تعرف حكمه</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/laraib-garden.webp" alt="حديقة القرآن" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="حديقة القرآن — شجرة لكل سورة محفوظة، ووردة لكل سورة مقروءة" data-en="The Quran Garden — a tree per surah memorised, a flower per surah read">حديقة القرآن — شجرة لكل سورة محفوظة، ووردة لكل سورة مقروءة</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/laraib-sessions.webp" alt="الحصص والمستوى" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="الحصص والمستوى — الحصة المباشرة والتقييمات والتقارير" data-en="Classes and progress — the live class, evaluations and reports">الحصص والمستوى — الحصة المباشرة والتقييمات والتقارير</figcaption>
+              </figure>
+              <figure>
+                <img src="img/biz/laraib-lang.webp" alt="عربي و English" width="1080" height="1080" loading="lazy" tabindex="0">
+                <figcaption data-ar="عربي و English — والشاشة بتتقلب مع اللغة" data-en="Arabic and English — the layout flips with the language">عربي و English — والشاشة بتتقلب مع اللغة</figcaption>
+              </figure>
+            </div>
+            <p class="gallery-note" data-ar="↔ اسحب للجنب، ودوس على أي صورة تكبّرها" data-en="↔ Swipe across, and tap any image to see it full size">↔ اسحب للجنب، ودوس على أي صورة تكبّرها</p>
 
             <h4 data-ar="اللي بنيته" data-en="What I built">اللي بنيته</h4>
             <ul class="notes">
@@ -3003,5 +3090,55 @@ html[lang="en"] .sec-head.has-num::before{content:attr(data-num-en)}
   }
 </script>
 
+<script>
+/* ---------- the business slides open full size ----------
+   They are 1080px designs shown at rail size, so the text needs a way in. */
+(function(){
+  var imgs = document.querySelectorAll(".gallery.biz img");
+  if(!imgs.length) return;
+  var root = document.documentElement;
+  var box = document.createElement("div");
+  box.className = "lightbox";
+  box.hidden = true;
+  box.setAttribute("role", "dialog");
+  box.setAttribute("aria-modal", "true");
+  var big = document.createElement("img");
+  box.appendChild(big);
+  document.body.appendChild(box);
+  var group = [], at = 0, back = null;
+
+  function show(i){
+    at = (i + group.length) % group.length;
+    big.src = group[at].currentSrc || group[at].src;
+    big.alt = group[at].alt;
+  }
+  function open(img){
+    group = Array.prototype.slice.call(img.closest(".gallery").querySelectorAll("img"));
+    back = img;
+    show(group.indexOf(img));
+    box.hidden = false;
+    root.style.overflow = "hidden";
+  }
+  function close(){
+    box.hidden = true;
+    root.style.overflow = "";
+    if(back) back.focus();
+  }
+  for(var i = 0; i < imgs.length; i++){
+    imgs[i].addEventListener("click", function(){ open(this); });
+    imgs[i].addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(this); }
+    });
+  }
+  box.addEventListener("click", close);
+  document.addEventListener("keydown", function(e){
+    if(box.hidden) return;
+    var rtl = root.dir === "rtl";
+    if(e.key === "Escape") close();
+    else if(e.key === "ArrowLeft") show(at + (rtl ? 1 : -1));
+    else if(e.key === "ArrowRight") show(at + (rtl ? -1 : 1));
+  });
+})();
+</script>
 </body>
 </html>
